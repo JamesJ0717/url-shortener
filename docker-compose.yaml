@@ -1,0 +1,16 @@
+version: "3.7"
+services:
+  service:
+    container_name: $SERVICE_NAME
+    build: ./
+    image: node
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.$SERVICE_NAME.rule=Host(`$SERVICE_NAME.localhost`)"
+      - "traefik.http.routers.$SERVICE_NAME.entrypoints=$ENTRYPOINT_NAME"
+
+networks:
+  traefik:
+    external: true
