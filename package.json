@@ -1,15 +1,12 @@
 {
-  "name": "next-docker",
-  "version": "0.1.0",
+  "name": "@urlsh/monorepo",
+  "repository": "git@github.com:jamesj0717/url-shortener",
+  "author": "James Johnson <me@jamesjohnson.io>",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "next": "9.5.5",
-    "react": "16.13.1",
-    "react-dom": "16.13.1"
-  }
+  "workspaces": [
+    "packages/*"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "license": "SEE LICENSE IN LICENSE.md"
 }

@@ -1,16 +1,56 @@
 version: "3.7"
 services:
-  service:
-    container_name: $SERVICE_NAME
-    build: ./
-    image: node
+  client:
+    tty: true
+    container_name: $SERVICE_NAME-client
+    image: node:13
+    working_dir: /srv
+    volumes:
+      - ./:/srv:rw
+    command: "yarn workspace @$SERVICE_NAME/client start"
+    expose:
+      - "3000"
+    depends_on:
+      - server
     networks:
       - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.$SERVICE_NAME.rule=Host(`$SERVICE_NAME.localhost`)"
-      - "traefik.http.routers.$SERVICE_NAME.entrypoints=$ENTRYPOINT_NAME"
+      - "traefik.http.routers.$SERVICE_NAME-client.rule=Host(`$SERVICE_NAME.$SERVER`)"
+      - "traefik.http.routers.$SERVICE_NAME-client.entrypoints=web"
+
+  server:
+    container_name: $SERVICE_NAME-server
+    image: node:13
+    working_dir: /srv
+    volumes:
+      - .:/srv:rw
+    command: yarn workspace @$SERVICE_NAME/server dev
+    expose:
+      - "80"
+    depends_on:
+      - mongo
+    env_file: .env
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.$SERVICE_NAME-server.entrypoints=web"
+      - "traefik.http.routers.$SERVICE_NAME-server.rule=Host(`$SERVICE_NAME.$SERVER`) && PathPrefix(`/api`)"
+
+  mongo:
+    container_name: $SERVICE_NAME-mongo
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodata:/data
+    networks:
+      - traefik
 
 networks:
   traefik:
     external: true
+
+volumes:
+  mongodata: {}
